@@ -1,7 +1,12 @@
 package com.gordianyuan.dubbo.web.client;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import com.google.common.base.Throwables;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,37 +22,38 @@ public class InvokeRequestParameter {
 
   private static final Logger log = LoggerFactory.getLogger(InvokeRequestParameter.class);
 
+  private static final String NULL_STRING = "$null";
+
   private String type;
 
   private Object value;
 
   private static final ObjectMapper mapper = new ObjectMapper();
 
+  private static final Splitter SPLITTER = Splitter.on(",").omitEmptyStrings().trimResults();
+
   static {
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
     mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
   }
 
-  protected InvokeRequestParameter() {
-  }
+  @JsonCreator
+  public InvokeRequestParameter(
+      @JsonProperty("type") String type,
+      @JsonProperty("value") Object value) {
+    Preconditions.checkNotNull(type);
 
-  public InvokeRequestParameter(String type, Object value) {
-    setType(type);
-    setValue(value);
+    this.type = adjustType(type);
+    this.value = adjustValue(value, this.type);
   }
 
   public String getType() {
     return type;
   }
 
-  public void setType(String type) {
-    this.type = adjustType(type);
-  }
-
   private String adjustType(String type) {
-    if ("$null".equalsIgnoreCase(type)) {
-      return null;
-    }
+    type = type.trim();
+
     if ("string".equalsIgnoreCase(type)) {
       return "java.lang.String";
     }
@@ -64,42 +70,43 @@ public class InvokeRequestParameter {
     return value;
   }
 
-  public void setValue(Object value) {
-    this.value = adjustValue(value);
-  }
+  private Object adjustValue(Object value, String type) {
 
-  private Object adjustValue(Object value) {
-    if (value == null) {
+    if (value == null || !(value instanceof String)) {
+      return value;
+    }
+
+    String stringValue = ((String) value).trim();
+    if (isNullString(stringValue)) {
       return null;
     }
 
-    if (value instanceof String) {
-      String stringValue = ((String) value).trim();
-
-      if (stringValue.equalsIgnoreCase("$null")) {
-        return null;
+    if (Map.class.getName().equals(type)) {
+      try {
+        return parseJsonStringToMap(stringValue);
+      } catch (IOException e) {
+        log.error("It is not a valid JSON string. {}", e.getMessage());
+        Throwables.propagate(e);
       }
+    }
 
-      if (stringValue.startsWith("{")) {
-        try {
-          return parseJsonStringToMap(stringValue);
-        } catch (IOException e) {
-          log.error("It is not a valid JSON string. {}", e.getMessage());
-        }
-      }
-
+    if (List.class.getName().equals(type)) {
       if (stringValue.startsWith("[")) {
         try {
           return parseJsonStringToList(stringValue);
         } catch (IOException e) {
           log.error("It is not a valid JSON string. {}", e.getMessage());
         }
+      } else {
+        return SPLITTER.splitToList(stringValue);
       }
-
-      return stringValue;
     }
 
-    return value;
+    return stringValue;
+  }
+
+  private boolean isNullString(String value) {
+    return NULL_STRING.equalsIgnoreCase(value);
   }
 
   private Map<String, Object> parseJsonStringToMap(String jsonString) throws IOException {
