@@ -2,6 +2,7 @@ package com.gordianyuan.dubbo.web.client;
 
 import org.junit.Test;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -21,6 +22,12 @@ public class InvokeRequestParameterTest {
 
     parameter.setType("string");
     assertThat(parameter.getType(), equalTo(String.class.getName()));
+
+    parameter.setType("list");
+    assertThat(parameter.getType(), equalTo(List.class.getName()));
+
+    parameter.setType("map");
+    assertThat(parameter.getType(), equalTo(Map.class.getName()));
   }
 
   @Test
@@ -32,6 +39,9 @@ public class InvokeRequestParameterTest {
 
     parameter.setValue("{a: 1}");
     assertThat(parameter.getValue(), instanceOf(Map.class));
+
+    parameter.setValue("['Alex', 'Bob']");
+    assertThat(parameter.getValue(), instanceOf(List.class));
   }
 
 }

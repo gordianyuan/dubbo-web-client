@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 public class InvokeRequestParameter {
@@ -24,6 +25,7 @@ public class InvokeRequestParameter {
 
   static {
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+    mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
   }
 
   protected InvokeRequestParameter() {
@@ -48,6 +50,12 @@ public class InvokeRequestParameter {
     }
     if ("string".equalsIgnoreCase(type)) {
       return "java.lang.String";
+    }
+    if ("list".equalsIgnoreCase(type)) {
+      return "java.util.List";
+    }
+    if ("map".equalsIgnoreCase(type)) {
+      return "java.util.Map";
     }
     return type;
   }
@@ -74,7 +82,15 @@ public class InvokeRequestParameter {
 
       if (stringValue.startsWith("{")) {
         try {
-          return parseJsonString(stringValue);
+          return parseJsonStringToMap(stringValue);
+        } catch (IOException e) {
+          log.error("It is not a valid JSON string. {}", e.getMessage());
+        }
+      }
+
+      if (stringValue.startsWith("[")) {
+        try {
+          return parseJsonStringToList(stringValue);
         } catch (IOException e) {
           log.error("It is not a valid JSON string. {}", e.getMessage());
         }
@@ -86,8 +102,13 @@ public class InvokeRequestParameter {
     return value;
   }
 
-  private Map<String, Object> parseJsonString(String jsonString) throws IOException {
+  private Map<String, Object> parseJsonStringToMap(String jsonString) throws IOException {
     return mapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
+    });
+  }
+
+  private List<Object> parseJsonStringToList(String jsonString) throws IOException {
+    return mapper.readValue(jsonString, new TypeReference<List<Object>>() {
     });
   }
 
