@@ -18,27 +18,6 @@ public class InvokeRequestParameterTest {
 
     parameter.setType("string");
     assertThat(parameter.getType(), equalTo(String.class.getName()));
-
-    parameter.setType("int");
-    assertThat(parameter.getType(), equalTo(Integer.class.getName()));
-
-    parameter.setType("integer");
-    assertThat(parameter.getType(), equalTo(Integer.class.getName()));
-
-    parameter.setType("char");
-    assertThat(parameter.getType(), equalTo(Character.class.getName()));
-
-    parameter.setType("character");
-    assertThat(parameter.getType(), equalTo(Character.class.getName()));
-
-    parameter.setType("float");
-    assertThat(parameter.getType(), equalTo(Float.class.getName()));
-
-    parameter.setType("short");
-    assertThat(parameter.getType(), equalTo(Short.class.getName()));
-
-    parameter.setType("long");
-    assertThat(parameter.getType(), equalTo(Long.class.getName()));
   }
 
   @Test

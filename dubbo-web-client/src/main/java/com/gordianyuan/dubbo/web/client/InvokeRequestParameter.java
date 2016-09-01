@@ -31,24 +31,6 @@ public class InvokeRequestParameter {
     if ("string".equalsIgnoreCase(type)) {
       return "java.lang.String";
     }
-    if ("short".equalsIgnoreCase(type)) {
-      return "java.lang.Short";
-    }
-    if ("int".equalsIgnoreCase(type) || "integer".equalsIgnoreCase(type)) {
-      return "java.lang.Integer";
-    }
-    if ("long".equalsIgnoreCase(type)) {
-      return "java.lang.Long";
-    }
-    if ("char".equalsIgnoreCase(type) || "character".equalsIgnoreCase(type)) {
-      return "java.lang.Character";
-    }
-    if ("float".equalsIgnoreCase(type)) {
-      return "java.lang.Float";
-    }
-    if ("double".equalsIgnoreCase(type)) {
-      return "java.lang.Double";
-    }
     return type;
   }
 
