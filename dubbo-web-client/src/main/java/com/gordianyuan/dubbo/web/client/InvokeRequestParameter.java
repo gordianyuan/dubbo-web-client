@@ -2,11 +2,29 @@ package com.gordianyuan.dubbo.web.client;
 
 import com.google.common.base.MoreObjects;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.Map;
+
 public class InvokeRequestParameter {
+
+  private static final Logger log = LoggerFactory.getLogger(InvokeRequestParameter.class);
 
   private String type;
 
   private Object value;
+
+  private static final ObjectMapper mapper = new ObjectMapper();
+
+  static {
+    mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+  }
 
   protected InvokeRequestParameter() {
   }
@@ -43,10 +61,34 @@ public class InvokeRequestParameter {
   }
 
   private Object adjustValue(Object value) {
-    if (value instanceof String && "$null".equalsIgnoreCase((String) value)) {
+    if (value == null) {
       return null;
     }
+
+    if (value instanceof String) {
+      String stringValue = ((String) value).trim();
+
+      if (stringValue.equalsIgnoreCase("$null")) {
+        return null;
+      }
+
+      if (stringValue.startsWith("{")) {
+        try {
+          return parseJsonString(stringValue);
+        } catch (IOException e) {
+          log.error("It is not a valid JSON string. {}", e.getMessage());
+        }
+      }
+
+      return stringValue;
+    }
+
     return value;
+  }
+
+  private Map<String, Object> parseJsonString(String jsonString) throws IOException {
+    return mapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
+    });
   }
 
   @Override

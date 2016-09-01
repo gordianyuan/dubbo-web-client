@@ -2,7 +2,10 @@ package com.gordianyuan.dubbo.web.client;
 
 import org.junit.Test;
 
+import java.util.Map;
+
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -26,6 +29,9 @@ public class InvokeRequestParameterTest {
 
     parameter.setValue("$null");
     assertThat(parameter.getValue(), is(nullValue()));
+
+    parameter.setValue("{a: 1}");
+    assertThat(parameter.getValue(), instanceOf(Map.class));
   }
 
 }
