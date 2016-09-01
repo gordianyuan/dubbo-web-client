@@ -50,9 +50,30 @@ public class InvokeRequestParameterTest {
   }
 
   @Test
+  public void createListParameterDerivedClass() {
+    InvokeRequestParameter parameter = new InvokeRequestParameter("java.util.ArrayList", "Alex,Bob");
+    assertThat(parameter.getType(), equalTo("java.util.ArrayList"));
+    assertThat(parameter.getValue(), instanceOf(List.class));
+    List value = (List) parameter.getValue();
+    assertThat(value.size(), equalTo(2));
+    assertThat(value.get(0), equalTo("Alex"));
+    assertThat(value.get(1), equalTo("Bob"));
+  }
+
+  @Test
   public void createMapParameterJsonArrayFormat() {
     InvokeRequestParameter parameter = new InvokeRequestParameter("map", "{\"a\":\"1\"}");
     assertThat(parameter.getType(), equalTo("java.util.Map"));
+    assertThat(parameter.getValue(), instanceOf(Map.class));
+    Map value = (Map) parameter.getValue();
+    assertThat(value.size(), equalTo(1));
+    assertThat(value.get("a"), equalTo("1"));
+  }
+
+  @Test
+  public void createMapParameterDerivedClass() {
+    InvokeRequestParameter parameter = new InvokeRequestParameter("java.util.HashMap", "{\"a\":\"1\"}");
+    assertThat(parameter.getType(), equalTo("java.util.HashMap"));
     assertThat(parameter.getValue(), instanceOf(Map.class));
     Map value = (Map) parameter.getValue();
     assertThat(value.size(), equalTo(1));

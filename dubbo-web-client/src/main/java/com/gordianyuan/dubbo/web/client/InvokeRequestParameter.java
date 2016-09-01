@@ -81,7 +81,14 @@ public class InvokeRequestParameter {
       return null;
     }
 
-    if (Map.class.getName().equals(type)) {
+    Class<?> clazz = null;
+    try {
+      clazz = Class.forName(type);
+    } catch (ClassNotFoundException e) {
+      // no need to deal
+    }
+
+    if (clazz != null && Map.class.isAssignableFrom(clazz)) {
       try {
         return parseJsonStringToMap(stringValue);
       } catch (IOException e) {
@@ -90,7 +97,7 @@ public class InvokeRequestParameter {
       }
     }
 
-    if (List.class.getName().equals(type)) {
+    if (clazz != null && List.class.isAssignableFrom(clazz)) {
       if (stringValue.startsWith("[")) {
         try {
           return parseJsonStringToList(stringValue);
