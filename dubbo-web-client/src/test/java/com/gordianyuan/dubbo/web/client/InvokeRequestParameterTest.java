@@ -86,4 +86,14 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), is(nullValue()));
   }
 
+  @Test
+  public void createPojoParameter() {
+    InvokeRequestParameter parameter = new InvokeRequestParameter("User", "{\"username\":\"alex\"}");
+    assertThat(parameter.getType(), equalTo("User"));
+    assertThat(parameter.getValue(), instanceOf(Map.class));
+    Map value = (Map) parameter.getValue();
+    assertThat(value.size(), equalTo(1));
+    assertThat(value.get("username"), equalTo("alex"));
+  }
+
 }

@@ -88,25 +88,40 @@ public class InvokeRequestParameter {
       // no need to deal
     }
 
-    if (clazz != null && Map.class.isAssignableFrom(clazz)) {
-      try {
-        return parseJsonStringToMap(stringValue);
-      } catch (IOException e) {
-        log.error("It is not a valid JSON string. {}", e.getMessage());
-        Throwables.propagate(e);
-      }
-    }
+    if (clazz == null) {
 
-    if (clazz != null && List.class.isAssignableFrom(clazz)) {
-      if (stringValue.startsWith("[")) {
+      if (stringValue.startsWith("{")) {
         try {
-          return parseJsonStringToList(stringValue);
+          return parseJsonStringToMap(stringValue);
         } catch (IOException e) {
           log.error("It is not a valid JSON string. {}", e.getMessage());
+          Throwables.propagate(e);
         }
-      } else {
-        return SPLITTER.splitToList(stringValue);
       }
+
+    } else {
+
+      if (Map.class.isAssignableFrom(clazz)) {
+        try {
+          return parseJsonStringToMap(stringValue);
+        } catch (IOException e) {
+          log.error("It is not a valid JSON string. {}", e.getMessage());
+          Throwables.propagate(e);
+        }
+      }
+
+      if (List.class.isAssignableFrom(clazz)) {
+        if (stringValue.startsWith("[")) {
+          try {
+            return parseJsonStringToList(stringValue);
+          } catch (IOException e) {
+            log.error("It is not a valid JSON string. {}", e.getMessage());
+          }
+        } else {
+          return SPLITTER.splitToList(stringValue);
+        }
+      }
+
     }
 
     return stringValue;
