@@ -45,14 +45,25 @@
           </div>
         </div>
         <div class="form-group" v-for="param in params">
-          <label class="col-sm-2 control-label">参数</label>
+          <label class="col-sm-2 control-label">参数 {{$index + 1}}</label>
           <div class="col-sm-3">
             <input v-model="param.type" class="form-control" placeholder="java.lang.String">
           </div>
-          <div class="col-sm-7">
+          <div class="col-sm-6">
             <input v-model="param.value" class="form-control" placeholder="Lisa">
           </div>
+          <div class="col-sm-1">
+            <button @click="removeParam(param)" class="btn btn-default btn-block pull-right"><i
+                class="glyphicon glyphicon-minus"></i></button>
+          </div>
         </div>
+        <div class="form-group">
+          <div class="col-sm-offset-11 col-sm-1">
+            <button @click="addParam" class="btn btn-default btn-block"><i
+                class="glyphicon glyphicon-plus"></i></button>
+          </div>
+        </div>
+
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">
             <button @click="invoke" class="btn btn-primary">发送请求</button>
@@ -113,6 +124,12 @@
             }, function (response) {
               vm.result = JSON.stringify(JSON.parse(response.body), null, 2);
             });
+      },
+      addParam: function () {
+        this.params.push({type: '', value: ''});
+      },
+      removeParam: function (param) {
+        this.params.$remove(param);
       }
     }
   })
