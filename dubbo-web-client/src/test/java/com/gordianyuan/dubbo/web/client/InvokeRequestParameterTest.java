@@ -2,9 +2,13 @@ package com.gordianyuan.dubbo.web.client;
 
 import org.junit.Test;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import static org.exparity.hamcrest.date.DateMatchers.within;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -94,6 +98,33 @@ public class InvokeRequestParameterTest {
     Map value = (Map) parameter.getValue();
     assertThat(value.size(), equalTo(1));
     assertThat(value.get("username"), equalTo("alex"));
+  }
+
+  @Test
+  public void createDateParameter() {
+    InvokeRequestParameter parameter = new InvokeRequestParameter("java.util.Date", "2016-07-18");
+    assertThat(parameter.getType(), equalTo("java.util.Date"));
+    assertThat(parameter.getValue(), instanceOf(Date.class));
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(2016, 6, 18, 0, 0, 0);
+    assertThat((Date) parameter.getValue(), within(1, TimeUnit.SECONDS, calendar.getTime()));
+  }
+
+  @Test
+  public void createDateParameterWithTime() {
+    InvokeRequestParameter parameter = new InvokeRequestParameter("java.util.Date", "2016-07-18 18:06:29");
+    assertThat(parameter.getType(), equalTo("java.util.Date"));
+    assertThat(parameter.getValue(), instanceOf(Date.class));
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(2016, 6, 18, 18, 6, 29);
+    assertThat((Date) parameter.getValue(), within(1, TimeUnit.SECONDS, calendar.getTime()));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void createDateParameterInvalidFormat() {
+    new InvokeRequestParameter("java.util.Date", "2016/07/18");
   }
 
 }

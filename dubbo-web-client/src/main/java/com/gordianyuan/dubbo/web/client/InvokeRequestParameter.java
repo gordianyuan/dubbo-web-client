@@ -4,6 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -89,37 +93,27 @@ public class InvokeRequestParameter {
     }
 
     if (clazz == null) {
-
       if (stringValue.startsWith("{")) {
-        try {
-          return parseJsonStringToMap(stringValue);
-        } catch (IOException e) {
-          log.error("It is not a valid JSON string. {}", e.getMessage());
-          Throwables.propagate(e);
-        }
+        return parseJsonStringToMap(stringValue);
       }
 
     } else {
 
       if (Map.class.isAssignableFrom(clazz)) {
-        try {
-          return parseJsonStringToMap(stringValue);
-        } catch (IOException e) {
-          log.error("It is not a valid JSON string. {}", e.getMessage());
-          Throwables.propagate(e);
-        }
+        return parseJsonStringToMap(stringValue);
       }
 
       if (List.class.isAssignableFrom(clazz)) {
         if (stringValue.startsWith("[")) {
-          try {
-            return parseJsonStringToList(stringValue);
-          } catch (IOException e) {
-            log.error("It is not a valid JSON string. {}", e.getMessage());
-          }
+          return parseJsonStringToList(stringValue);
         } else {
           return SPLITTER.splitToList(stringValue);
         }
+      }
+
+      if (Date.class.isAssignableFrom(clazz)) {
+        Date date = parseToDate(stringValue);
+        return date;
       }
 
     }
@@ -131,14 +125,47 @@ public class InvokeRequestParameter {
     return NULL_STRING.equalsIgnoreCase(value);
   }
 
-  private Map<String, Object> parseJsonStringToMap(String jsonString) throws IOException {
-    return mapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
-    });
+  private Map<String, Object> parseJsonStringToMap(String jsonString) {
+    try {
+      return mapper.readValue(jsonString, new TypeReference<Map<String, Object>>() {
+      });
+    } catch (IOException e) {
+      log.error("It is not a valid JSON string. {}", e.getMessage());
+      Throwables.propagate(e);
+    }
+
+    return null;
   }
 
-  private List<Object> parseJsonStringToList(String jsonString) throws IOException {
-    return mapper.readValue(jsonString, new TypeReference<List<Object>>() {
-    });
+  private List<Object> parseJsonStringToList(String jsonString) {
+    try {
+      return mapper.readValue(jsonString, new TypeReference<List<Object>>() {
+      });
+    } catch (IOException e) {
+      log.error("It is not a valid JSON string. {}", e.getMessage());
+      Throwables.propagate(e);
+    }
+
+    return null;
+  }
+
+  private Date parseToDate(String dateString) {
+    List<SimpleDateFormat> patterns = Lists.newArrayList();
+    patterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX"));
+    patterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+    patterns.add(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+    patterns.add(new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss"));
+    patterns.add(new SimpleDateFormat("yyyy-MM-dd"));
+
+    for (SimpleDateFormat pattern : patterns) {
+      try {
+        return new Date(pattern.parse(dateString).getTime());
+      } catch (ParseException pe) {
+        // Loop on
+      }
+    }
+
+    throw new IllegalArgumentException("Invalid date string: " + dateString);
   }
 
   @Override
