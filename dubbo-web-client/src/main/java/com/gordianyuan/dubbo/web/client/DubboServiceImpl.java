@@ -32,7 +32,7 @@ public class DubboServiceImpl implements DubboService {
   private LoadingCache<String, ReferenceConfig<GenericService>> referenceCache;
 
   @Autowired
-  public DubboServiceImpl(ApplicationConfig application) {
+  public DubboServiceImpl(final ApplicationConfig application) {
     registryCache = CacheBuilder.newBuilder()
         .maximumSize(1024)
         .expireAfterWrite(12, TimeUnit.HOURS)
@@ -57,7 +57,7 @@ public class DubboServiceImpl implements DubboService {
 
             RegistryConfig registry = registryCache.get(registryAddress);
 
-            ReferenceConfig<GenericService> reference = new ReferenceConfig<>();
+            ReferenceConfig<GenericService> reference = new ReferenceConfig<GenericService>();
             reference.setApplication(application);
             reference.setRegistry(registry);
             reference.setGeneric(true);

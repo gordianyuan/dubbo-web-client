@@ -48,7 +48,7 @@ public class InvokeRequestParameter {
     Preconditions.checkNotNull(type);
 
     this.type = adjustType(type);
-    this.value = adjustValue(value, this.type);
+    this.value = value == null ? null : adjustValue(value, this.type);
   }
 
   public String getType() {
@@ -75,8 +75,10 @@ public class InvokeRequestParameter {
   }
 
   private Object adjustValue(Object value, String type) {
+    Preconditions.checkNotNull(value);
+    Preconditions.checkNotNull(type);
 
-    if (value == null || !(value instanceof String)) {
+    if (!(value instanceof String)) {
       return value;
     }
 

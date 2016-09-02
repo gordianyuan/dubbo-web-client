@@ -1,8 +1,8 @@
 package com.gordianyuan.dubbo.web.client;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class InvokeRequest {
@@ -13,7 +13,7 @@ public class InvokeRequest {
 
   private String methodName;
 
-  private List<InvokeRequestParameter> params = new ArrayList<>();
+  private List<InvokeRequestParameter> params = Lists.newArrayList();
 
   public String getRegistryAddress() {
     return registryAddress;
@@ -58,15 +58,19 @@ public class InvokeRequest {
   }
 
   public String[] getParameterTypes() {
-    return getParams().stream()
-        .map(InvokeRequestParameter::getType)
-        .toArray(String[]::new);
+    List<String> types = Lists.newArrayList();
+    for (InvokeRequestParameter param : getParams()) {
+      types.add(param.getType());
+    }
+    return types.toArray(new String[0]);
   }
 
   public Object[] getParameterValues() {
-    return getParams().stream()
-        .map(InvokeRequestParameter::getValue)
-        .toArray();
+    List<Object> values = Lists.newArrayList();
+    for (InvokeRequestParameter param : getParams()) {
+      values.add(param.getValue());
+    }
+    return values.toArray(new Object[0]);
   }
 
 }

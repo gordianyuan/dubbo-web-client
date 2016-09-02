@@ -37,13 +37,13 @@ public class InvokeRequestTest {
 
     request.setParams(ImmutableList.of(new InvokeRequestParameter("java.lang.String", "Gordian")));
     assertThat(request.getParameterValues().length, equalTo(1));
-    assertThat(request.getParameterValues()[0], equalTo("Gordian"));
+    assertThat((String) request.getParameterValues()[0], equalTo("Gordian"));
 
     request.setParams(ImmutableList.of(new InvokeRequestParameter("java.lang.String", "Gordian"),
         new InvokeRequestParameter("java.lang.Integer", 1)));
     assertThat(request.getParameterValues().length, equalTo(2));
-    assertThat(request.getParameterValues()[0], equalTo("Gordian"));
-    assertThat(request.getParameterValues()[1], equalTo(1));
+    assertThat((String) request.getParameterValues()[0], equalTo("Gordian"));
+    assertThat((Integer) request.getParameterValues()[1], equalTo(1));
 
     // test $null value
     request.setParams(ImmutableList.of(new InvokeRequestParameter("string", "$null")));

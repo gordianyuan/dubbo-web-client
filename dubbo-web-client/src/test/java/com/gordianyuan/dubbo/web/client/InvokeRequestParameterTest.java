@@ -21,14 +21,14 @@ public class InvokeRequestParameterTest {
   public void createSpecifiedSParameter() {
     InvokeRequestParameter parameter = new InvokeRequestParameter("java.lang.String", "Lisa");
     assertThat(parameter.getType(), equalTo(String.class.getName()));
-    assertThat(parameter.getValue(), equalTo("Lisa"));
+    assertThat((String) parameter.getValue(), equalTo("Lisa"));
   }
 
   @Test
   public void createStringParameter() {
     InvokeRequestParameter parameter = new InvokeRequestParameter("string", "Lisa");
     assertThat(parameter.getType(), equalTo(String.class.getName()));
-    assertThat(parameter.getValue(), equalTo("Lisa"));
+    assertThat((String) parameter.getValue(), equalTo("Lisa"));
   }
 
   @Test
@@ -38,8 +38,8 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(List.class));
     List value = (List) parameter.getValue();
     assertThat(value.size(), equalTo(2));
-    assertThat(value.get(0), equalTo("Alex"));
-    assertThat(value.get(1), equalTo("Bob"));
+    assertThat((String) value.get(0), equalTo("Alex"));
+    assertThat((String) value.get(1), equalTo("Bob"));
   }
 
   @Test
@@ -49,8 +49,8 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(List.class));
     List value = (List) parameter.getValue();
     assertThat(value.size(), equalTo(2));
-    assertThat(value.get(0), equalTo("Alex"));
-    assertThat(value.get(1), equalTo("Bob"));
+    assertThat((String) value.get(0), equalTo("Alex"));
+    assertThat((String) value.get(1), equalTo("Bob"));
   }
 
   @Test
@@ -60,8 +60,8 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(List.class));
     List value = (List) parameter.getValue();
     assertThat(value.size(), equalTo(2));
-    assertThat(value.get(0), equalTo("Alex"));
-    assertThat(value.get(1), equalTo("Bob"));
+    assertThat((String) value.get(0), equalTo("Alex"));
+    assertThat((String) value.get(1), equalTo("Bob"));
   }
 
   @Test
@@ -71,7 +71,7 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(Map.class));
     Map value = (Map) parameter.getValue();
     assertThat(value.size(), equalTo(1));
-    assertThat(value.get("a"), equalTo("1"));
+    assertThat((String) value.get("a"), equalTo("1"));
   }
 
   @Test
@@ -81,7 +81,7 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(Map.class));
     Map value = (Map) parameter.getValue();
     assertThat(value.size(), equalTo(1));
-    assertThat(value.get("a"), equalTo("1"));
+    assertThat((String) value.get("a"), equalTo("1"));
   }
 
   @Test
@@ -97,7 +97,7 @@ public class InvokeRequestParameterTest {
     assertThat(parameter.getValue(), instanceOf(Map.class));
     Map value = (Map) parameter.getValue();
     assertThat(value.size(), equalTo(1));
-    assertThat(value.get("username"), equalTo("alex"));
+    assertThat((String) value.get("username"), equalTo("alex"));
   }
 
   @Test
