@@ -2,6 +2,7 @@ package com.gordianyuan.dubbo.web.client;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -50,10 +51,10 @@ public class DubboServiceImpl implements DubboService {
           @Override
           public ReferenceConfig<GenericService> load(String key) throws Exception {
             List<String> values = REFERENCE_CACHE_KEY_SPLITTER.splitToList(key);
-            Preconditions.checkArgument(values.size() == 2);
 
             String registryAddress = values.get(0);
             String referenceInterface = values.get(1);
+            String version = values.size() > 2 ? values.get(2) : null;
 
             RegistryConfig registry = registryCache.get(registryAddress);
 
@@ -62,6 +63,7 @@ public class DubboServiceImpl implements DubboService {
             reference.setRegistry(registry);
             reference.setGeneric(true);
             reference.setInterface(referenceInterface);
+            reference.setVersion(version);
             return reference;
           }
         });
@@ -70,7 +72,9 @@ public class DubboServiceImpl implements DubboService {
   @Override
   public Object invoke(InvokeRequest request) {
     GenericService genericService = getGenericService(
-        request.getRegistryAddress(), request.getReferenceInterface());
+        request.getRegistryAddress(),
+        request.getReferenceInterface(),
+        request.getVersion());
 
     String method = request.getMethodName();
     String[] parameterTypes = request.getParameterTypes();
@@ -78,13 +82,20 @@ public class DubboServiceImpl implements DubboService {
     return genericService.$invoke(method, parameterTypes, parameterValues);
   }
 
-  private GenericService getGenericService(String registryAddress, String referenceInterface) {
+  private GenericService getGenericService(
+      String registryAddress,
+      String referenceInterface,
+      String version) {
+
     Preconditions.checkNotNull(registryAddress);
     Preconditions.checkNotNull(referenceInterface);
 
     ReferenceConfig<GenericService> reference = null;
     try {
       String cacheKey = registryAddress + "|" + referenceInterface;
+      if (!Strings.isNullOrEmpty(version)) {
+        cacheKey += "|" + version;
+      }
       reference = referenceCache.get(cacheKey);
     } catch (ExecutionException e) {
       Throwables.propagate(e);

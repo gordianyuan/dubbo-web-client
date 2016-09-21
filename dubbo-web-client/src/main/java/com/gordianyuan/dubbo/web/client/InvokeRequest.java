@@ -13,6 +13,8 @@ public class InvokeRequest {
 
   private String methodName;
 
+  private String version;
+
   private List<InvokeRequestParameter> params = Lists.newArrayList();
 
   public String getRegistryAddress() {
@@ -39,6 +41,14 @@ public class InvokeRequest {
     this.methodName = methodName;
   }
 
+  public String getVersion() {
+    return version;
+  }
+
+  public void setVersion(String version) {
+    this.version = version;
+  }
+
   public List<InvokeRequestParameter> getParams() {
     return params;
   }
@@ -53,6 +63,7 @@ public class InvokeRequest {
         .add("registryAddress", registryAddress)
         .add("referenceInterface", referenceInterface)
         .add("methodName", methodName)
+        .add("version", version)
         .add("params", params)
         .toString();
   }
