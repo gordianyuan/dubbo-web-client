@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.7",
-    "lodash": "^4.15.0",
+    "lodash": "^4.17.19",
     "normalize.css": "^4.2.0",
     "request": "^2.74.0",
     "vue": "^1.0.26",
